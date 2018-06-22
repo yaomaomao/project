@@ -15,7 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from . import views
+from .views import views,userviews
 urlpatterns = [
     url(r'^$', views.index,name='myadmin_index'),  
+    url(r'^useradd$', userviews.add,name='myadmin_user_add'),  
+    url(r'^userlist$', userviews.list,name='myadmin_user_list'),  
+    url(r'^userdelete$', userviews.delete,name='myadmin_user_delete'),  
+    url(r'^useredit$', userviews.edit,name='myadmin_user_edit'),  
+    url(r'^userupdate$', userviews.update,name='myadmin_user_update'),  
+
 ]
