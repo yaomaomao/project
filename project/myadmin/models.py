@@ -17,4 +17,26 @@ class Users(models.Model):
 
     pic = models.CharField(max_length = 200,default = "/static/pics/user.jpg")
     
-    
+class Types(models.Model):
+
+    name = models.CharField(max_length = 50) 
+    pid = models.IntegerField() 
+
+    path = models.CharField(max_length = 255)
+
+class Goods(models.Model):
+
+    typeid =  models.ForeignKey(to="Types", to_field="id")
+    goods = models.CharField(max_length = 50)
+    descr = models.TextField()
+    price = models.FloatField()
+    info = models.TextField(null=True)
+    pics = models.CharField(max_length = 255)
+    # 状态
+    state = models.IntegerField(default=0)
+    # 库存
+    store = models.IntegerField(default=0)
+    # 被点击的次数
+    clicknum = models.IntegerField(default=0)
+    num = models.IntegerField(default=0)
+    addtime = models.DateTimeField(auto_now_add=True)

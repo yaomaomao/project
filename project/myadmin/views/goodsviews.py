@@ -1,13 +1,25 @@
 from django.shortcuts import render,reverse
 from django.http import HttpResponse,JsonResponse
 import os
-from ..models import Users
+from ..models import Users,Goods,Types
  # Create your views here.
 def add(request):
     # get请求 会转到添加页面
     if request.method == "GET":
 
-        return render(request,"myadmin/user/add.html")
+        tlist = Types.objects.extra(select = {'paths':'concat(path,id)'}).order_by('paths')
+
+        for x in tlist:
+            if x.pid == 0:
+                x.pname = '顶级分类'
+            else:
+                t = Types.objects.get(id=x.pid)
+                x.pname = t.name
+            num  = x.path.count(',')-1
+            x.name = (num*'|----')+x.name
+
+
+        return render(request,"myadmin/goods/add.html",{"typeslist":tlist})
 
     elif request.method == "POST":
         try:
@@ -15,28 +27,28 @@ def add(request):
 
             del data['csrfmiddlewaretoken']
 
-            # md5加密
-            from django.contrib.auth.hashers import make_password, check_password
-            data['password'] = make_password(data['password'], None, 'pbkdf2_sha256')
-
             #  图片处理
-            if request.FILES.get('pic',None):
+            if request.FILES.get('pics',None):
 
-                data['pic'] = uploads(request)
-                if  data['pic'] == 1:
-                    return HttpResponse('<script>alert("上传的文件类型不符合要求");location.href="'+reverse('myadmin_user_add')+'"</script>')
+                data['pics'] = uploads(request)
+                if  data['pics'] == 1:
+                    return HttpResponse('<script>alert("上传的文件类型不符合要求");location.href="'+reverse('myadmin_goods_add')+'"</script>')
+            print(data)
+            data['typeid'] = Types.objects.get(id = data['typeid'])
+        
+            print(data)
+            Goods.objects.create(**data)
             
-            Users.objects.create(**data)
-          
-            return HttpResponse('<script>alert("添加成功");location.href="'+reverse('myadmin_user_list')+'"</script>')
+            return HttpResponse('<script>alert("添加成功");location.href="'+reverse('myadmin_goods_list')+'"</script>')
+        
         except:
-            return HttpResponse('<script>alert("添加失败");location.href="'+reverse('myadmin_user_add')+'"</script>')
+            return HttpResponse('<script>alert("添加失败");location.href="'+reverse('myadmin_goods_add')+'"</script>')
             
 # 执行文件的上传
 def uploads(request):
     
     # 获取请求中的 文件 File 
-    myfile = request.FILES.get('pic',None)
+    myfile = request.FILES.get('pics',None)
 
     # 获取上传的文件后缀名 myfile.name.split('.').pop()
     p = myfile.name.split('.').pop()
@@ -67,47 +79,13 @@ def uploads(request):
 # 列表
 def list(request):
 
-    # 搜索
-    type = request.GET.get('type',None)
-    kwords = request.GET.get('keywords',None)
-
-    if type:
-
-        if type == 'all':
-            from django.db.models import Q
-            userlist = Users.objects.filter(
-                Q(username__contains=kwords)|
-                Q(age__contains=kwords)|
-                Q(email__contains=kwords)|
-                Q(sex__contains=kwords)|
-                Q(phone__contains=kwords)   
-            )
-        elif type == "username":
-            userlist = Users.objects.filter(username__contains=kwords)
-        elif type == "age":
-            userlist = Users.objects.filter(age__contains=kwords)
-        elif type == "email":
-            userlist = Users.objects.filter(email__contains=kwords)
-        elif type == "sex":
-            userlist = Users.objects.filter(sex__contains=kwords)
-        elif type == "phone":
-            userlist = Users.objects.filter(phone__contains=kwords)
-
-    else:
-        userlist = Users.objects.all()
-
     
-    # 分页
-    from django.core.paginator import Paginator
-    # 实例化分页对象，参数1：数据集合，参数2：每页显示 的条数
-    paginator = Paginator(userlist,10)
-    # 获取当前的页码
-    page = request.GET.get('p',1)
-    # 获取当前页的数据
-    ulist = paginator.page(page)
-
-    context = {"userlist":ulist}
-
+    goodslist = Goods.objects.all()
+    
+    context = {"goodslist":goodslist}
+    print(goodslist)
+    for v in goodslist:
+        print(v)
     return render(request,"myadmin/user/list.html",context)
 
 
