@@ -78,28 +78,35 @@ def uploads(request):
 
 # 列表
 def list(request):
-
-    
     goodslist = Goods.objects.all()
     
-    context = {"goodslist":goodslist}
+    # 分页
+    from django.core.paginator import Paginator
+    # 实例化分页对象，参数1：数据集合，参数2：每页显示 的条数
+    paginator = Paginator(goodslist,5)
+    # 获取当前的页码
+    page = request.GET.get('p',1)
+    # 获取当前页的数据
+    ulist = paginator.page(page)
+
     print(goodslist)
-    for v in goodslist:
-        print(v)
-    return render(request,"myadmin/user/list.html",context)
+    context = {"goodslist":ulist}
+
+    return render(request,"myadmin/goods/list.html",context)
 
 
-#  删除会员
+#  删除商品
 def delete(request):
     try:
         # 获取id
-        uid = request.GET.get('uid',None)
+        uid = request.GET.get('gid',None)
         # 获取对象
-        user = Users.objects.get(id=uid)
-        if user.pic:
+        goods = Goods.objects.get(id=uid)
+        
+        if goods.pics:
             # /static/pics/
-            os.remove('.'+user.pic)
-        user.delete()
+            os.remove('.'+goods.pics)
+        goods.delete()
         context = {"msg":"删除成功！","type":0}
         return JsonResponse(context)
     except:
@@ -110,33 +117,33 @@ def delete(request):
 # 修改
 def edit(request):
 
-    user_id = request.GET.get("uid",None)
+    goods_id = request.GET.get("gid",None)
 
-    user = Users.objects.get(id=user_id)
+    goods = Goods.objects.get(id=goods_id)
 
     if request.method == "GET":
 
-        return render(request,"myadmin/user/edit.html",{"user":user})
+        return render(request,"myadmin/goods/edit.html",{"goods":goods})
 
     elif request.method == "POST":
         try:
             # 判断是否上传了新的图片
-            if request.FILES.get('pic',None):
-                if user.pic:
-                    os.remove('.'+user.pic)
-                user.pic = uploads(request)
+            if request.FILES.get('pics',None):
+                if goods.pics:
+                    os.remove('.'+goods.pics)
+                goods.pics = uploads(request)
 
-            user.username = request.POST['username']
-            user.email = request.POST['email']
-            user.age = request.POST['age']
-            user.sex = request.POST['sex']
-            user.phone = request.POST['phone']
+            goods.goods = request.POST['goods']
+            goods.descr = request.POST['descr']
+            goods.price = request.POST['price']
+            goods.store = request.POST['store']
+            goods.info = request.POST['info']
             
-            print(user)
-            user.save()
+            print(goods)
+            goods.save()
             
-            return HttpResponse("<script>alert('修改成功！');location.href='"+reverse('myadmin_user_list') +"'</script>")
+            return HttpResponse("<script>alert('修改成功！');location.href='"+reverse('myadmin_goods_list') +"'</script>")
         except:
-            return HttpResponse("<script>alert('修改失败！');location.href='"+reverse('myadmin_user_edit') +'?uid='+str(user.id)+"'</script>")
+            return HttpResponse("<script>alert('修改失败！');location.href='"+reverse('myadmin_goods_edit') +'?uid='+str(goods.id)+"'</script>")
 
         

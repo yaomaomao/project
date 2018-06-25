@@ -52,11 +52,9 @@
                 <div class="am-form-group tpl-table-list-select">
                     <select name="type" data-am-selected="{btnSize: 'sm'}" style="display: none;">
                         <option value="all" {% if request.GET.type == 'all' %} selected {% endif %} >所有条件</option>
-                        <option value="goodsname" {% if request.GET.type == 'goodsname' %} selected {% endif %} >姓名</option>
-                        <option value="age" {% if request.GET.type == 'age' %} selected {% endif %} >年龄</option>
-                        <option value="email" {% if request.GET.type == 'email' %} selected {% endif %} >邮箱</option>
-                        <option value="phone" {% if request.GET.type == 'phone' %} selected {% endif %} >手机号</option>
-                        <option value="sex" {% if request.GET.type == 'sex' %} selected {% endif %} >性别</option>
+                        <option value="goods" {% if request.GET.type == 'goods' %} selected {% endif %} >商品名</option>
+                        <option value="typeid" {% if request.GET.type == 'typeid' %} selected {% endif %} >所属分类</option>
+                        
                     </select>
                 </div>
             </div>
@@ -107,7 +105,7 @@
                         <td class="am-text-middle">{{ goods.addtime|date:"Y-m-d H-i-s" }}</td>
                         <td class="am-text-middle">
                             <div class="tpl-table-black-operation">
-                                <a href="{% url 'myadmin_goods_edit' %}?uid={{ goods.id }}">
+                                <a href="{% url 'myadmin_goods_edit' %}?gid={{ goods.id }}">
                                     <i class="am-icon-pencil"></i> 编辑
                                 </a>
                                 <a href="javascript:;" class="tpl-table-black-operation-del">
@@ -132,7 +130,7 @@
                         <li><a href="#">4</a></li>
                         <li><a href="#">5</a></li>
                         <li><a href="#">»</a></li> -->
-                
+                    {% load pagetag %} {% PageShow goodslist.paginator.num_pages request %}
                 </ul>
             </div>
         </div>
@@ -143,7 +141,8 @@
     $(".tpl-table-black-operation-del").click(function () {
         id = $(this).parents("tr").find("td:eq(0)").text()
         goods = $(this)
-        $.get("{% url 'myadmin_goods_delete' %}", { uid: id }, function (data) {
+        alert(id)
+        $.get("{% url 'myadmin_goods_delete' %}", { gid: id }, function (data) {
             alert(data.msg)
             if (data.type == 0) {
                 goods.parents("tr").remove()
