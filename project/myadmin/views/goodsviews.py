@@ -78,8 +78,36 @@ def uploads(request):
 
 # 列表
 def list(request):
-    goodslist = Goods.objects.all()
     
+    # 获取搜索条件
+    type = request.GET.get('type',None)
+    kwords = request.GET.get('keywords',None)
+
+    if type:
+
+        if type == 'all':
+            from django.db.models import Q
+            goodslist = Goods.objects.filter(
+                Q(goods__contains=kwords)|
+                Q(descr__contains=kwords)|
+                Q(price__contains=kwords)|
+                Q(store__contains=kwords)|
+                Q(info__contains=kwords)   
+            )
+        elif type == "goods":
+            goodslist = Goods.objects.filter(goods__contains=kwords)
+        elif type == "descr":
+            goodslist = Goods.objects.filter(descr__contains=kwords)
+        elif type == "price":
+            goodslist = Goods.objects.filter(price__contains=kwords)
+        elif type == "store":
+            goodslist = Goods.objects.filter(store__contains=kwords)
+        elif type == "info":
+            goodslist = Goods.objects.filter(info__contains=kwords)
+    else:
+
+        goodslist = Goods.objects.all()
+
     # 分页
     from django.core.paginator import Paginator
     # 实例化分页对象，参数1：数据集合，参数2：每页显示 的条数
@@ -89,7 +117,7 @@ def list(request):
     # 获取当前页的数据
     ulist = paginator.page(page)
 
-    print(goodslist)
+
     context = {"goodslist":ulist}
 
     return render(request,"myadmin/goods/list.html",context)

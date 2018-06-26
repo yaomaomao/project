@@ -1,7 +1,7 @@
 from django.shortcuts import render,reverse
 from django.http import HttpResponse,JsonResponse
 import os
-from ..models import Types
+from ..models import Types,Goods
 
 # 获取typeslist
 def gettypesorder(request):
@@ -25,8 +25,18 @@ def list(request):
     types = request.GET.get('type',None)
     keywords = request.GET.get('keywords',None)
     typeslist = gettypesorder(request)
+     # 分页
+    from django.core.paginator import Paginator
+    # 实例化分页对象，参数1：数据集合，参数2：每页显示 的条数
+    paginator = Paginator(typeslist,5)
+    # 获取当前的页码
+    page = request.GET.get('p',1)
+    # 获取当前页的数据
+    ulist = paginator.page(page)
+
+
     
-    for type in typeslist:
+    for type in ulist:
 
         if type.pid == 0:
             type.pname = "顶级分类"
@@ -35,7 +45,7 @@ def list(request):
             type.pname =Types.objects.get(id=type.pid).name
 
 
-    return render(request,"myadmin/types/list.html",{"typeslist":typeslist})
+    return render(request,"myadmin/types/list.html",{"typeslist":ulist})
 
 # 添加分类
 def add(request):
@@ -71,10 +81,16 @@ def delete(request):
     if num > 0 :
         data = {'msg':'当前类下有子类,不能删除','type':1}
     else:
-        type = Types.objects.get(id= tid)
-        type.delete()
-        data = {'msg':'删除成功','type':0}   
-
+        # 当前分类下的商品数量
+        s = Goods.objects.filter(typeid = (Types.objects.get(id = tid))).count()
+        # 判断商品数量
+        if s == 0:
+            type = Types.objects.get(id= tid)
+            type.delete()
+            data = {'msg':'删除成功','type':0}   
+        else:
+            data = {'msg':'当前分类下有商品，不能删除','type':1} 
+    
     return JsonResponse(data)
 
 # 修改

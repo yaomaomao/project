@@ -53,7 +53,11 @@
                     <select name="type" data-am-selected="{btnSize: 'sm'}" style="display: none;">
                         <option value="all" {% if request.GET.type == 'all' %} selected {% endif %} >所有条件</option>
                         <option value="goods" {% if request.GET.type == 'goods' %} selected {% endif %} >商品名</option>
-                        <option value="typeid" {% if request.GET.type == 'typeid' %} selected {% endif %} >所属分类</option>
+                        <option value="descr" {% if request.GET.type == 'descr' %} selected {% endif %} >商品描述</option>
+                        <option value="price" {% if request.GET.type == 'price' %} selected {% endif %} >商品单价</option>
+                        <option value="store" {% if request.GET.type == 'store' %} selected {% endif %} >商品库存</option>
+                        <option value="info" {% if request.GET.type == 'info' %} selected {% endif %} >商品详情</option>
+                        
                         
                     </select>
                 </div>
@@ -80,8 +84,9 @@
                         <th>所属分类</th>
                         <th>商品描述</th>
                         <th>单价</th>
+                        <th>库存数量</th>
                         <th>状态</th>
-                        <th>注册时间</th>
+                        <th>添加时间</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -95,8 +100,9 @@
                         </td>
                         <td class="am-text-middle">{{ goods.goods }}</td>
                         <td class="am-text-middle">{{ goods.typeid.name }}</td>
-                        <td class="am-text-middle">{{ goods.descr }}</td>
+                        <td class="am-text-middle">{{ goods.descr|truncatechars:5 }}</td>
                         <td class="am-text-middle">{{ goods.price }}</td>
+                        <td class="am-text-middle">{{ goods.store }}</td>
                         
                        
                         <td class="am-text-middle">

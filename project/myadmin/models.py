@@ -29,7 +29,8 @@ class Goods(models.Model):
     typeid =  models.ForeignKey(to="Types", to_field="id")
     goods = models.CharField(max_length = 50)
     descr = models.TextField()
-    price = models.FloatField()
+    price = models.FloatField(null=True)
+    
     info = models.TextField(null=True)
     pics = models.CharField(max_length = 255)
     # 状态
