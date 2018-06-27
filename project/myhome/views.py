@@ -1,15 +1,32 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 
-from myadmin.models import Users
+from myadmin.models import Users,Goods,Types
 
 from django.contrib.auth.hashers import make_password, check_password
 # Create your views here.
 # 首页
 def index(request):
 
+    '''
+
+    '''
+    # 获取顶级的分类
+    typeslist = Types.objects.filter(pid=0)
+
+    typegoods = []
+    for type in typeslist:
+        # 获取一级分类
+        type.sub = Types.objects.filter(pid = type.id)
+        
+        for t in type.sub:
+            # 获取商品信息
+            t.goodslist = Goods.objects.filter(typeid = t.id)
+            typegoods.append(t)
     
-    return render(request,"myhome/index.html")
+    context = {"typeslist":typeslist,"typegoods":typegoods}     
+
+    return render(request,"myhome/index.html",context)
 
 # 注册
 def register(request):
@@ -36,9 +53,11 @@ def register(request):
             # return HttpResponse("<script>alert('注册失败！');location.href='"+reverse('myhome_register')+"'</script>")
 
 # 列表
-def userlist(request):
+def userlist(request,tid):
 
-    return render(request,"myhome/index.html")
+    goodslist = Goods.objects.filter(typeid = tid)
+
+    return render(request,"myhome/list.html",{"goodslist":goodslist})
 
 # 登录
 def login(request):
@@ -74,9 +93,11 @@ def logout(request):
     return HttpResponse('<script>alert("登出成功");location.href="/"</script>')
 
 # 详情
-def info(request):
+def info(request,goodsid):
 
-    return render(request,"myhome/index.html")
+    goods = Goods.objects.get(id = goodsid)
+
+    return render(request,"myhome/info.html",{"goods":goods})
 
 # ajax验证验证码
 def code(request):

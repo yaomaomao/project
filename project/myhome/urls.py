@@ -24,9 +24,9 @@ urlpatterns = [
     # 登录
     url(r'^login$', views.login,name="myhome_login"),
     # 列表
-    url(r'^list$', views.userlist,name="myhome_list"),
+    url(r'^list/(?P<tid>[0-9]+)/$', views.userlist,name="myhome_list"),
     # 详情
-    url(r'^info$', views.info,name="myhome_info"),
+    url(r'^info/(?P<goodsid>[0-9]+)$', views.info,name="myhome_info"),
     # 验证码
     url(r'^vcode$', views.vcode,name="myhome_vcode"),
     # 验证码
