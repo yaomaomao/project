@@ -3,12 +3,12 @@ from django.db import models
 # Create your models here.
 class Users(models.Model):
 
-    username = models.CharField(max_length=50)
+    username = models.CharField(max_length=50,unique=True)
     password = models.CharField(max_length=80)
     email = models.CharField(max_length = 50)
-    sex = models.CharField(max_length = 50)
+    sex = models.CharField(max_length = 50,null=True)
     age = models.IntegerField(null = True)
-    phone = models.CharField(max_length = 50)
+    phone = models.CharField(max_length = 50,null=True)
 
     # 0 正常  1禁用 
     status = models.IntegerField(default=0)
@@ -28,13 +28,13 @@ class Goods(models.Model):
 
     typeid =  models.ForeignKey(to="Types", to_field="id")
     goods = models.CharField(max_length = 50)
-    descr = models.TextField()
+    descr = models.TextField(null=True)
     price = models.FloatField(null=True)
     
     info = models.TextField(null=True)
     pics = models.CharField(max_length = 255)
     # 状态
-    state = models.IntegerField(default=0)
+    state = models.IntegerField(default=0,null=True)
     # 库存
     store = models.IntegerField(default=0)
     # 被点击的次数
