@@ -1,0 +1,90 @@
+{% extends 'myhome/base.html' %} {% block title %}
+<title>付款页面</title>
+{% endblock %} 
+{% block css %}
+<link href="/static/myhome/css/personal.css" rel="stylesheet" type="text/css">
+<link href="/static/myhome/css/systyle.css" rel="stylesheet" type="text/css">
+<link href="/static/myhome/css/sustyle.css" rel="stylesheet" type="text/css" />
+<link href="/static/myhome/css/cartstyle.css" rel="stylesheet" type="text/css" />
+<link href="/static/myhome/css/jsstyle.css" rel="stylesheet" type="text/css" />
+
+ {% endblock %}
+{% block con %}
+<div class="center">
+    <div class="col-main">
+<div class="take-delivery">
+    <div class="status">
+       
+        <div>
+            <span style="font-size: 22px">支付成功！即将跳转个人中心 倒计时 <span style="font-size: 22px"  id="m">5</span> 秒,或者点击链接跳转 <a style="font-size: 20px;color: red" href="{% url 'myhome_mycenter' %}">跳转</a></span>
+        </div>
+        <div class="successInfo">
+            <ul>
+                <li>付款金额
+                    <em>¥{{ order.totalprice }}</em>
+                </li>
+                <div class="user-info">
+                    <p hidden name = "{{ order.id }}"></p>
+                    <p>收货人：{{ order.addressid.name }}</p>
+                    <p>联系电话：{{ order.addressid.phone }}</p>
+                    <p>收货地址：{{ order.addressid.address }},{{ order.addressid.xiangxi }}</p>
+                </div>
+
+                
+                请认真核对您的收货信息，如有错误请联系客服
+
+            </ul>
+            
+        
+            <script type="text/javascript">
+        
+                var a = setInterval(function(){
+                    m = document.getElementById('m')
+                    num = Number(m.innerHTML)
+                    num --;
+                    if(num == 0){
+                        location.href="{% url 'myhome_mycenter' %}"
+                        clearInterval(a)
+                    }
+                    m.innerHTML = num
+                },1000)
+                
+            </script>
+            <div class="option">
+                <span class="info">您可以</span>
+                <a href="../person/order.html" class="J_MakePoint">查看
+                    <span>已买到的宝贝</span>
+                </a>
+                <a href="../person/orderinfo.html" class="J_MakePoint">查看
+                    <span>交易详情</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</div></div>
+
+<div class="footer">
+    <div class="footer-hd">
+        <p>
+            <a href="#">恒望科技</a>
+            <b>|</b>
+            <a href="#">商城首页</a>
+            <b>|</b>
+            <a href="#">支付宝</a>
+            <b>|</b>
+            <a href="#">物流</a>
+        </p>
+    </div>
+    <div class="footer-bd">
+        <p>
+            <a href="#">关于恒望</a>
+            <a href="#">合作伙伴</a>
+            <a href="#">联系我们</a>
+            <a href="#">网站地图</a>
+            <em>© 2015-2025 Hengwang.com 版权所有</em>
+        </p>
+    </div>
+</div>
+
+{% endblock %}
